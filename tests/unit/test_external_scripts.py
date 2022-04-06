@@ -14,7 +14,7 @@ def test_Repo2Docker_external_build_scripts(tmpdir):
 
         def get_build_script_files(self):
             files = {str(tempfile): "/tmp/my_extra_script"}
-            files.update(super().get_build_script_files())
+            files |= super().get_build_script_files()
             return files
 
     app = Repo2Docker(repo=str(tmpdir))

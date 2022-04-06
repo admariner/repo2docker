@@ -22,7 +22,7 @@ def test_volume_abspath():
             [
                 "repo2docker",
                 "-v",
-                "{}:/home/{}".format(tmpdir, username),
+                f"{tmpdir}:/home/{username}",
                 "--user-id",
                 str(os.geteuid()),
                 "--user-name",
@@ -31,9 +31,10 @@ def test_volume_abspath():
                 "--",
                 "/bin/bash",
                 "-c",
-                "echo -n {} > ts".format(ts),
+                f"echo -n {ts} > ts",
             ]
         )
+
 
         with open(os.path.join(tmpdir, "ts")) as f:
             assert f.read() == ts
@@ -61,9 +62,10 @@ def test_volume_relpath():
                     "--",
                     "/bin/bash",
                     "-c",
-                    "echo -n {} > ts".format(ts),
+                    f"echo -n {ts} > ts",
                 ]
             )
+
 
             with open(os.path.join(tmpdir, "ts")) as f:
                 assert f.read() == ts

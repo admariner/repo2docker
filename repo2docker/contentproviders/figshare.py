@@ -54,20 +54,16 @@ class Figshare(DoiProvider):
         url = self.doi2url(doi)
 
         for host in self.hosts:
-            if any([url.startswith(s) for s in host["hostname"]]):
-                match = self.url_regex.match(url)
-                if match:
-                    self.article_id = match.groups()[3]
-                    self.article_version = match.groups()[5]
-                    if not self.article_version:
-                        self.article_version = "1"
-                    return {
-                        "article": self.article_id,
-                        "host": host,
-                        "version": self.article_version,
-                    }
-                else:
+            if any(url.startswith(s) for s in host["hostname"]):
+                if not (match := self.url_regex.match(url)):
                     return None
+                self.article_id = match.groups()[3]
+                self.article_version = match.groups()[5] or "1"
+                return {
+                    "article": self.article_id,
+                    "host": host,
+                    "version": self.article_version,
+                }
 
     def fetch(self, spec, output_dir, yield_output=False):
         """Fetch and unpack a Figshare article"""
@@ -79,9 +75,10 @@ class Figshare(DoiProvider):
             article_id, article_version
         )
         resp = self.urlopen(
-            "{}{}/versions/{}".format(host["api"], article_id, article_version),
+            f'{host["api"]}{article_id}/versions/{article_version}',
             headers={"accept": "application/json"},
         )
+
 
         article = resp.json()
 
@@ -91,10 +88,9 @@ class Figshare(DoiProvider):
         only_one_file = len(files) == 1
         for file_ref in files:
             unzip = file_ref["name"].endswith(".zip") and only_one_file
-            for line in self.fetch_file(file_ref, host, output_dir, unzip):
-                yield line
+            yield from self.fetch_file(file_ref, host, output_dir, unzip)
 
     @property
     def content_id(self):
         """The Figshare article ID"""
-        return "{}.v{}".format(self.article_id, self.article_version)
+        return f"{self.article_id}.v{self.article_version}"

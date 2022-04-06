@@ -21,11 +21,7 @@ class DoiProvider(ContentProvider):
     def __init__(self):
         super().__init__()
         self.session = Session()
-        self.session.headers.update(
-            {
-                "user-agent": "repo2docker {}".format(__version__),
-            }
-        )
+        self.session.headers.update({"user-agent": f"repo2docker {__version__}"})
 
     def _request(self, url, **kwargs):
         return self.session.get(url, **kwargs)
@@ -38,7 +34,7 @@ class DoiProvider(ContentProvider):
         if not isinstance(req, request.Request):
             req = request.Request(req)
 
-        req.add_header("User-Agent", "repo2docker {}".format(__version__))
+        req.add_header("User-Agent", f"repo2docker {__version__}")
         if headers is not None:
             for key, value in headers.items():
                 req.add_header(key, value)
@@ -46,21 +42,17 @@ class DoiProvider(ContentProvider):
         return request.urlopen(req)
 
     def doi2url(self, doi):
-        # Transform a DOI to a URL
-        # If not a doi, assume we have a URL and return
-        if is_doi(doi):
-            doi = normalize_doi(doi)
-
-            try:
-                resp = self._request("https://doi.org/{}".format(doi))
-                resp.raise_for_status()
-            # If the DOI doesn't resolve, just return URL
-            except HTTPError:
-                return doi
-            return resp.url
-        else:
+        if not is_doi(doi):
             # Just return what is actulally just a URL
             return doi
+        doi = normalize_doi(doi)
+
+        try:
+            resp = self._request(f"https://doi.org/{doi}")
+            resp.raise_for_status()
+        except HTTPError:
+            return doi
+        return resp.url
 
     def fetch_file(self, file_ref, host, output_dir, unzip=False):
         # the assumption is that `unzip=True` means that this is the only

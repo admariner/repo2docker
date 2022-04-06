@@ -457,7 +457,7 @@ class BuildPack:
         last_user = "root"
         for user, script in self.get_build_scripts():
             if last_user != user:
-                build_script_directives.append("USER {}".format(user))
+                build_script_directives.append(f"USER {user}")
                 last_user = user
             build_script_directives.append(
                 "RUN {}".format(textwrap.dedent(script.strip("\n")))
@@ -467,7 +467,7 @@ class BuildPack:
         last_user = "root"
         for user, script in self.get_assemble_scripts():
             if last_user != user:
-                assemble_script_directives.append("USER {}".format(user))
+                assemble_script_directives.append(f"USER {user}")
                 last_user = user
             assemble_script_directives.append(
                 "RUN {}".format(textwrap.dedent(script.strip("\n")))
@@ -477,7 +477,7 @@ class BuildPack:
         last_user = "root"
         for user, script in self.get_preassemble_scripts():
             if last_user != user:
-                preassemble_script_directives.append("USER {}".format(user))
+                preassemble_script_directives.append(f"USER {user}")
                 last_user = user
             preassemble_script_directives.append(
                 "RUN {}".format(textwrap.dedent(script.strip("\n")))
@@ -642,10 +642,7 @@ class BaseImage(BuildPack):
                     # We're doing shell injection around here, gotta be careful.
                     # FIXME: Add support for specifying version numbers
                     if not re.match(r"^[a-z0-9.+-]+", package):
-                        raise ValueError(
-                            "Found invalid package name {} in "
-                            "apt.txt".format(package)
-                        )
+                        raise ValueError(f"Found invalid package name {package} in apt.txt")
                     extra_apt_packages.append(package)
 
             scripts.append(
