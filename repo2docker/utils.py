@@ -120,14 +120,12 @@ def validate_and_generate_port_mapping(port_mappings):
         try:
             p = int(port)
         except ValueError as e:
-            raise ValueError(
-                'Port specification "{}" has ' "an invalid port.".format(mapping)
-            )
+            raise ValueError(f'Port specification "{mapping}" has an invalid port.')
         if p > 65535:
             raise ValueError(
-                'Port specification "{}" specifies '
-                "a port above 65535.".format(mapping)
+                f'Port specification "{mapping}" specifies a port above 65535.'
             )
+
         return port
 
     def check_port_string(p):
@@ -135,10 +133,7 @@ def validate_and_generate_port_mapping(port_mappings):
         if len(parts) == 2:  # 134/tcp
             port, protocol = parts
             if protocol not in ("tcp", "udp"):
-                raise ValueError(
-                    'Port specification "{}" has '
-                    "an invalid protocol.".format(mapping)
-                )
+                raise ValueError(f'Port specification "{mapping}" has an invalid protocol.')
         elif len(parts) == 1:
             port = parts[0]
             protocol = "tcp"
@@ -299,7 +294,7 @@ class ByteSpecification(Integer):
                 "Must be an int or a string with suffix K, M, G, T".format(val=value)
             )
         else:
-            return int(float(num) * self.UNIT_SUFFIXES[suffix])
+            return int(num * self.UNIT_SUFFIXES[suffix])
 
 
 def check_ref(ref, cwd=None):
@@ -365,11 +360,7 @@ def copytree(
     function that supports the same signature (like copy()) can be used.
     """
     names = os.listdir(src)
-    if ignore is not None:
-        ignored_names = ignore(src, names)
-    else:
-        ignored_names = set()
-
+    ignored_names = ignore(src, names) if ignore is not None else set()
     os.makedirs(dst, exist_ok=True)
     errors = []
     for name in names:
@@ -427,10 +418,7 @@ def deep_get(dikt, path):
     """
     value = dikt
     for component in path.split("."):
-        if component.isdigit():
-            value = value[int(component)]
-        else:
-            value = value[component]
+        value = value[int(component)] if component.isdigit() else value[component]
     return value
 
 
@@ -497,12 +485,7 @@ def is_local_pip_requirement(line):
         # file references break isolation
         return True
 
-    if "://" in line:
-        # handle git://../local/file
-        path = line.split("://", 1)[1]
-    else:
-        path = line
-
+    path = line.split("://", 1)[1] if "://" in line else line
     if path.startswith("."):
         # references a local file
         return True

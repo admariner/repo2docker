@@ -34,9 +34,9 @@ class DockerBuildPack(BuildPack):
         # buildpacks/base.py where it is duplicated
         if not isinstance(memory_limit, int):
             raise ValueError(
-                "The memory limit has to be specified as an"
-                "integer but is '{}'".format(type(memory_limit))
+                f"The memory limit has to be specified as aninteger but is '{type(memory_limit)}'"
             )
+
         limits = {}
         if memory_limit:
             # We want to always disable swap. Docker expects `memswap` to
@@ -55,7 +55,6 @@ class DockerBuildPack(BuildPack):
             labels=self.get_labels(),
         )
 
-        build_kwargs.update(extra_build_kwargs)
+        build_kwargs |= extra_build_kwargs
 
-        for line in client.build(**build_kwargs):
-            yield line
+        yield from client.build(**build_kwargs)

@@ -79,8 +79,7 @@ class CondaBuildPack(BaseImage):
 
     def get_env(self):
         """Make kernel env the default for `conda install`"""
-        env = super().get_env() + [("CONDA_DEFAULT_ENV", "${KERNEL_PYTHON_PREFIX}")]
-        return env
+        return super().get_env() + [("CONDA_DEFAULT_ENV", "${KERNEL_PYTHON_PREFIX}")]
 
     def get_path(self):
         """Return paths (including conda environment path) to be added to
@@ -154,7 +153,7 @@ class CondaBuildPack(BaseImage):
             "conda/activate-conda.sh": "/etc/profile.d/activate-conda.sh",
         }
         py_version = self.python_version
-        self.log.info("Building conda environment for python=%s" % py_version)
+        self.log.info(f"Building conda environment for python={py_version}")
         # Select the frozen base environment based on Python version.
         # avoids expensive and possibly conflicting upgrades when changing
         # major Python versions during upgrade.
@@ -183,16 +182,18 @@ class CondaBuildPack(BaseImage):
                 if not frozen_name:
                     self.log.warning(f"No frozen env for {py_version}")
         files[
-            "conda/" + frozen_name
+            f"conda/{frozen_name}"
         ] = self._nb_environment_file = "/tmp/env/environment.lock"
+
 
         # add requirements.txt, if present
         if os.path.exists(os.path.join(HERE, pip_frozen_name)):
             files[
-                "conda/" + pip_frozen_name
+                f"conda/{pip_frozen_name}"
             ] = self._nb_requirements_file = "/tmp/env/requirements.txt"
 
-        files.update(super().get_build_script_files())
+
+        files |= super().get_build_script_files()
         return files
 
     _environment_yaml = None
@@ -354,10 +355,7 @@ class CondaBuildPack(BaseImage):
             )
 
         if self.uses_r:
-            if self.r_version:
-                r_pin = "=" + self.r_version
-            else:
-                r_pin = ""
+            r_pin = f"={self.r_version}" if self.r_version else ""
             scripts.append(
                 (
                     "${NB_USER}",

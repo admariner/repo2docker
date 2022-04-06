@@ -42,7 +42,7 @@ class Hydroshare(DoiProvider):
         url = self.doi2url(doi)
 
         for host in hosts:
-            if any([url.startswith(s) for s in host["hostname"]]):
+            if any(url.startswith(s) for s in host["hostname"]):
                 self.resource_id = url.strip("/").rsplit("/", maxsplit=1)[1]
                 self.version = self._fetch_version(host)
                 return {
@@ -59,18 +59,18 @@ class Hydroshare(DoiProvider):
         resource_id = spec["resource"]
         host = spec["host"]
 
-        bag_url = "{}{}".format(host["django_irods"], resource_id)
+        bag_url = f'{host["django_irods"]}{resource_id}'
 
         yield "Downloading {}.\n".format(bag_url)
 
         # bag downloads are prepared on demand and may need some time
         conn = self.urlopen(bag_url)
         total_wait_time = 0
+        wait_time = 10
         while (
             conn.status_code == 200
             and conn.headers["content-type"] != "application/zip"
         ):
-            wait_time = 10
             total_wait_time += wait_time
             if total_wait_time > timeout:
                 msg = "Bag taking too long to prepare, exiting now, try again later."
@@ -102,4 +102,4 @@ class Hydroshare(DoiProvider):
     @property
     def content_id(self):
         """The HydroShare resource ID"""
-        return "{}.v{}".format(self.resource_id, self.version)
+        return f"{self.resource_id}.v{self.version}"
