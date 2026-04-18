@@ -1,4 +1,4 @@
-myst-parser<4
+myst-parser<5
 pydata-sphinx-theme
 sphinx-autobuild
 sphinx-copybutton
