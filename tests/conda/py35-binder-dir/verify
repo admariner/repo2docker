@@ -15,11 +15,12 @@ out = sh([kernel_python, "--version"], stderr=STDOUT)
 v = out.split()[1]
 assert v[:3] == "3.5", out
 
+mamba_version = "2.6.0"
+
 out = sh(["micromamba", "--version"])
-assert out == "2.3.3", out
+assert out == mamba_version, out
 
 out = sh(["mamba", "--version"])
-assert out == "2.3.3", out
-
+assert out == mamba_version, out
 
 sh([kernel_python, "-c", "import numpy"])
