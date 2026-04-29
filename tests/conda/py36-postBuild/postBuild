@@ -3,7 +3,8 @@ set -ex
 
 # mamba/conda installs in kernel env
 mamba install -y make
+mamba clean --all
 
 # note `pip` on path is _not_ the kernel env!
 # is this what we (or users) want?
-pip install pytest
+pip install --no-cache pytest
