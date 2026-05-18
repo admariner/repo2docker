@@ -5,10 +5,12 @@ set -ex
 
 cd $(dirname $0)
 
-export MAMBA_VERSION="2.6.1"
+# mamba version checked in tests/conda/py35-binder-dir/verify
+export MAMBA_VERSION="2.5.0"
 export CONDA_VERSION="26.3.2"
+MICROMAMBA_BUILD=2
 
-URL="https://anaconda.org/conda-forge/micromamba/${MAMBA_VERSION}/download/${CONDA_PLATFORM}/micromamba-${MAMBA_VERSION}-0.tar.bz2"
+URL="https://anaconda.org/conda-forge/micromamba/${MAMBA_VERSION}/download/${CONDA_PLATFORM}/micromamba-${MAMBA_VERSION}-${MICROMAMBA_BUILD}.tar.bz2"
 
 # make sure we don't do anything funky with user's $HOME
 # since this is run as root
