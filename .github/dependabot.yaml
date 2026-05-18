@@ -23,6 +23,11 @@ updates:
   # Update frozen requirements in repo2docker Dockerfile
   - package-ecosystem: pip
     directory: /
+    exclude-paths:
+      # don't apply this config to docs and dev requirements,
+      # which will cause undesired updates
+      - docs/**
+      - dev-requirements.txt
     allow:
       # need this to upgrade requirements.txt
       # otherwise only direct dependencies in requirements.in will be updated
